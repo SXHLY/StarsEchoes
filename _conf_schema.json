@@ -1,0 +1,42 @@
+{
+  "host": {
+    "description": "MySQL服务器IP地址或主机名",
+    "type": "string",
+    "hint": "选填，例如：localhost 或 127.0.0.1"
+  },
+  "port": {
+    "description": "MySQL服务器端口号",
+    "type": "int",
+    "hint": "选填，默认通常是3306"
+  },
+  "user": {
+    "description": "MySQL用户名",
+    "type": "string",
+    "hint": "必填，没有默认值"
+  },
+  "password": {
+    "description": "MySQL用户密码",
+    "type": "string",
+    "hint": "必填，没有默认值"
+  },
+  "database": {
+    "description": "要连接的MySQL数据库名称",
+    "type": "string",
+    "hint": "必填，没有默认值"
+  },
+  "minsize": {
+    "description": "连接池最小连接数",
+    "type": "int",
+    "hint": "选填，默认1，保持的最小空闲连接数"
+  },
+  "maxsize": {
+    "description": "连接池最大连接数",
+    "type": "int",
+    "hint": "选填,默认100，最大空闲连接数"
+  },
+  "sql_folder": {
+    "description": "SQL初始化文件所在文件夹路径",
+    "type": "string",
+    "hint": "选填，用于初始化数据库的SQL文件所在文件夹，例如: C:\\path\\to\\sql\\files 或 C:/path/to/sql/files"
+  }
+}
