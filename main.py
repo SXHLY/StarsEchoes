@@ -9,7 +9,7 @@ from astrbot.core import AstrBotConfig
 from astrbot.api.star import Context, Star, register
 from astrbot.api.event import filter, AstrMessageEvent
 
-@register("群星回响", "SXHLY", "一个私有工具", "v1.0")
+@register("群星回响", "SXHLY", "一个私有工具但不限制使用", "v1.0.1")
 class StarsEchoes(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
         super().__init__(context)
@@ -116,10 +116,11 @@ class StarsEchoes(Star):
                     cxwz = re.match(query_gz, message_str)
                     xinhao = cxwz.group(1)
                     bianhao = cxwz.group(2)
-                    await cursor.execute(f"""SELECT * FROM `设备存放位置` WHERE 设备型号 = %s AND 设备编号 = %s""",(xinhao, bianhao))
+                    await cursor.execute(f"""SELECT * FROM `设备存放位置` WHERE 设备型号 = %s AND 设备编号 = %s""",
+                                         (xinhao, bianhao))
                     chaxun = await cursor.fetchone()
-                    chaxunweizhi = chaxun['设备位置']
                     if chaxun:
+                        chaxunweizhi = chaxun['设备位置']
                         yield event.plain_result(f"型号：{xinhao}\n编号：{bianhao}\n位置：{chaxunweizhi}")
                         return
                     else:
@@ -128,14 +129,13 @@ class StarsEchoes(Star):
                         yield event.plain_result("感谢您的贡献")
                         return
                 if "添加位置" in message_str:
-                    add_gz = r"添加位置\D*(\d+)\D*(\d+)\s+([A-Za-z]\d+)"
+                    add_gz = r"添加位置\D*(\d+)\D*(\d+)\s*([A-Za-z]\d+)"
                     tjwz = re.match(add_gz, message_str)
                     xinhao = tjwz.group(1)
                     bianhao = tjwz.group(2)
                     shebeiweizhi = tjwz.group(3).upper()
-                    await cursor.execute(
-                        f"""SELECT * FROM `设备存放位置` WHERE 设备型号 = %s AND 设备编号 = %s""",
-                        (xinhao, bianhao))
+                    await cursor.execute(f"""SELECT * FROM `设备存放位置` WHERE 设备型号 = %s AND 设备编号 = %s""",
+                                         (xinhao, bianhao))
                     chaxun = await cursor.fetchone()
                     if chaxun:
                         chaxunweizhi = chaxun['设备位置']
@@ -166,7 +166,7 @@ class StarsEchoes(Star):
                         yield event.plain_result(f"位置添加成功\n型号：{xinhao}\n编号：{bianhao}\n位置：{shebeiweizhi}")
                         return
                 if "更新位置" in message_str:
-                    update_gz = r"更新位置\D*(\d+)\D*(\d+)\s+([A-Za-z]\d+)"
+                    update_gz = r"更新位置\D*(\d+)\D*(\d+)\s*([A-Za-z]\d+)"
                     gxwz = re.match(update_gz, message_str)
                     xinhao = gxwz.group(1)
                     bianhao = gxwz.group(2)
