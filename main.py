@@ -9,7 +9,7 @@ from astrbot.core import AstrBotConfig
 from astrbot.api.star import Context, Star, register
 from astrbot.api.event import filter, AstrMessageEvent
 
-@register("群星回响", "SXHLY", "一个私有工具但不限制使用", "v1.0.1")
+@register("群星回响", "SXHLY", "一个私有工具但不限制使用", "v1.1.0")
 class StarsEchoes(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
         super().__init__(context)
@@ -111,11 +111,15 @@ class StarsEchoes(Star):
         async with self.pool.acquire() as conn:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 message_str = event.message_str
-                if "查询" in message_str:
-                    query_gz = r"查询\D*(\d+)\D*(\d+)"
-                    cxwz = re.match(query_gz, message_str)
-                    xinhao = cxwz.group(1)
-                    bianhao = cxwz.group(2)
+                if re.search("查询|cx|Query", message_str, re.IGNORECASE) :
+                    query_gz = r"(?:查询|cx|Query)\D*(\d+)\D*(\d+)"
+                    cxwz = re.search(query_gz, message_str, re.IGNORECASE)
+                    try:
+                        xinhao = cxwz.group(1)
+                        bianhao = cxwz.group(2)
+                    except Exception as e:
+                        yield event.plain_result(f"您的输入有误，请重新输入。\n该指令应为：指令 型号 编号")
+                        return
                     await cursor.execute(f"""SELECT * FROM `设备存放位置` WHERE 设备型号 = %s AND 设备编号 = %s""",
                                          (xinhao, bianhao))
                     chaxun = await cursor.fetchone()
@@ -128,12 +132,16 @@ class StarsEchoes(Star):
                         yield event.plain_result("请在知道设备位置后输入：/添加位置 设备型号-设备编号 设备位置")
                         yield event.plain_result("感谢您的贡献")
                         return
-                if "添加位置" in message_str:
-                    add_gz = r"添加位置\D*(\d+)\D*(\d+)\s*([A-Za-z]\d+)"
-                    tjwz = re.match(add_gz, message_str)
-                    xinhao = tjwz.group(1)
-                    bianhao = tjwz.group(2)
-                    shebeiweizhi = tjwz.group(3).upper()
+                if re.search("添加位置|tjwz|add location|add loc", message_str, re.IGNORECASE):
+                    add_gz = r"(?:添加位置|tjwz|add location|add loc)\D*(\d+)\D*(\d+)\s*([A-Za-z]\d+)"
+                    tjwz = re.search(add_gz, message_str, re.IGNORECASE)
+                    try:
+                        xinhao = tjwz.group(1)
+                        bianhao = tjwz.group(2)
+                        shebeiweizhi = tjwz.group(3).upper()
+                    except Exception as e:
+                        yield event.plain_result(f"您的输入有误，请重新输入。\n该指令应为：指令 型号 编号 位置")
+                        return
                     await cursor.execute(f"""SELECT * FROM `设备存放位置` WHERE 设备型号 = %s AND 设备编号 = %s""",
                                          (xinhao, bianhao))
                     chaxun = await cursor.fetchone()
@@ -165,12 +173,16 @@ class StarsEchoes(Star):
                                              mysql_device_location_write_data)
                         yield event.plain_result(f"位置添加成功\n型号：{xinhao}\n编号：{bianhao}\n位置：{shebeiweizhi}")
                         return
-                if "更新位置" in message_str:
-                    update_gz = r"更新位置\D*(\d+)\D*(\d+)\s*([A-Za-z]\d+)"
-                    gxwz = re.match(update_gz, message_str)
-                    xinhao = gxwz.group(1)
-                    bianhao = gxwz.group(2)
-                    shebeiweizhi = gxwz.group(3).upper()
+                if re.search("更新位置|gxwz|update location|up loc", message_str, re.IGNORECASE):
+                    update_gz = r"(?:更新位置|gxwz|update location|up loc)\D*(\d+)\D*(\d+)\s*([A-Za-z]\d+)"
+                    gxwz = re.search(update_gz, message_str, re.IGNORECASE)
+                    try:
+                        xinhao = gxwz.group(1)
+                        bianhao = gxwz.group(2)
+                        shebeiweizhi = gxwz.group(3).upper()
+                    except Exception as e:
+                        yield event.plain_result(f"您的输入有误，请重新输入。\n该指令应为：指令 型号 编号 位置")
+                        return
                     await cursor.execute(
                         f"""SELECT * FROM `设备存放位置` WHERE 设备型号 = %s AND 设备编号 = %s""",
                         (xinhao, bianhao))
